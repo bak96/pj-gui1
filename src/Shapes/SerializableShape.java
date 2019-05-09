@@ -28,4 +28,10 @@ public abstract class SerializableShape {
 	public void setColor(Color color) {
 		this.color = color;
 	}
+
+	public abstract String serialize();
+
+	public String serializeColor() {
+		return Integer.toString(color.getRGB());
+	}
 }

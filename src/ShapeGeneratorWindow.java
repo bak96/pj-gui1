@@ -1,9 +1,11 @@
-import Shapes.SerializableRectangle;
 import Shapes.SerializableShape;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class ShapeGeneratorWindow extends JFrame {
@@ -33,14 +35,10 @@ public class ShapeGeneratorWindow extends JFrame {
 	public void paint(Graphics windowGraphics) {
 
 		Graphics g = bf.getGraphics();
-
-
 		g.setColor(Color.black);
 		g.fillRect(0, 0, getWidth(), getHeight());
+
 		Graphics2D g2 = (Graphics2D)g;
-		g2.setColor(new Color(255, 1, 100));
-
-
 
 		for (SerializableShape shape : shapes) {
 			shape.draw(g2);
@@ -53,27 +51,47 @@ public class ShapeGeneratorWindow extends JFrame {
 		generatorThread = new Thread(() -> {
 			generating = true;
 			int counter = 0;
-			while (generating) {
-				System.out.println("generating shapes " + counter);
 
-				SerializableShape sr = ShapeGenerator.generateRandomShape();
+			try {
+				PrintWriter writer = new PrintWriter(new FileWriter("test"));
 
-				sr.setPosition((int)(Math.random() * (getWidth() - sr.getWidth())), (int)(Math.random() * (getContentPane().getSize().getHeight() - sr.getHeight())) + (int)(getHeight() - getContentPane().getSize().getHeight()));
+				while (generating) {
+					System.out.println("generating shapes " + counter);
 
-				shapes.add(sr);
-				paint(this.getGraphics());
+					SerializableShape sr = ShapeGenerator.generateRandomShape();
+					setRandomPosition(sr);
 
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+					writer.println(sr.serialize());
+					writer.flush();
+
+					shapes.add(sr);
+					paint(this.getGraphics());
+
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					counter++;
 				}
-				counter++;
+
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		});
 	}
 
 	public void startGeneratingShapes() {
 		generatorThread.start();
+	}
+
+	private void setRandomPosition(SerializableShape shape) {
+		int minY = (int)(getHeight() - getContentPane().getSize().getHeight());
+		int contentHeight = (int) getContentPane().getSize().getHeight();
+
+		int posX = (int)(Math.random() * (getWidth() - shape.getWidth()));
+		int posY = (int)(Math.random() * (contentHeight - shape.getHeight())) + minY;
+		System.out.println(posX + " " + posY);
+		shape.setPosition(posX, posY);
 	}
 }

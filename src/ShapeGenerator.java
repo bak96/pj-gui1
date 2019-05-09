@@ -49,4 +49,5 @@ public class ShapeGenerator {
 	private static Color randomColor() {
 		return new Color((int)(Math.random()*255), (int)(Math.random()*255), (int)(Math.random()*255));
 	}
+
 }

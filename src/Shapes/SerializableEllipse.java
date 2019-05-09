@@ -2,6 +2,7 @@ package Shapes;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 public class SerializableEllipse extends SerializableShape {
 
@@ -27,5 +28,24 @@ public class SerializableEllipse extends SerializableShape {
 
 	public void setPosition(int x, int y) {
 		ellipse2D.setFrame(x, y, ellipse2D.getWidth(), ellipse2D.getHeight());
+	}
+
+	public String serialize() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("ellipse ");
+
+		Rectangle2D bounds = ellipse2D.getBounds();
+
+		sb.append(bounds.getX());
+		sb.append(' ');
+		sb.append(bounds.getY());
+		sb.append(' ');
+		sb.append(getWidth());
+		sb.append(' ');
+		sb.append(getHeight());
+		sb.append(' ');
+		sb.append(serializeColor());
+
+		return sb.toString();
 	}
 }

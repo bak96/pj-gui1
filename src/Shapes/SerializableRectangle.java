@@ -28,4 +28,23 @@ public class SerializableRectangle extends SerializableShape {
 	public int getHeight() {
 		return (int)rectangle2D.getHeight();
 	}
+
+	public String serialize() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("rectangle ");
+
+		Rectangle2D bounds = rectangle2D.getBounds();
+
+		sb.append(bounds.getX());
+		sb.append(' ');
+		sb.append(bounds.getY());
+		sb.append(' ');
+		sb.append(getWidth());
+		sb.append(' ');
+		sb.append(getHeight());
+		sb.append(' ');
+		sb.append(serializeColor());
+
+		return sb.toString();
+	}
 }
