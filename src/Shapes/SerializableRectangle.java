@@ -35,9 +35,9 @@ public class SerializableRectangle extends SerializableShape {
 
 		Rectangle2D bounds = rectangle2D.getBounds();
 
-		sb.append(bounds.getX());
+		sb.append((int)bounds.getX());
 		sb.append(' ');
-		sb.append(bounds.getY());
+		sb.append((int)bounds.getY());
 		sb.append(' ');
 		sb.append(getWidth());
 		sb.append(' ');

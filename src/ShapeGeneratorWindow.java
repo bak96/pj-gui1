@@ -17,9 +17,17 @@ public class ShapeGeneratorWindow extends JFrame {
 
 	private ArrayList<SerializableShape> shapes;
 
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(() -> {
+			ShapeGeneratorWindow shapeGenerator = new ShapeGeneratorWindow();
+			shapeGenerator.showWindow();
+			shapeGenerator.startGeneratingShapes();
+		});
+	}
+
 	ShapeGeneratorWindow() {
 		setSize(1024, 768);
-		setTitle("Hello, world!");
+		setTitle("Shape generator");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		shapes = new ArrayList<>();
