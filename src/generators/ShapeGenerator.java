@@ -1,3 +1,5 @@
+package generators;
+
 import shapes.SerializableEllipse;
 import shapes.SerializableRectangle;
 import shapes.SerializableShape;

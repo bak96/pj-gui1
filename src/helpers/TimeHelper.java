@@ -1,3 +1,5 @@
+package helpers;
+
 public class TimeHelper {
 	public static void sleep(int milliseconds) {
 		try {

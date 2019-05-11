@@ -1,3 +1,8 @@
+package app;
+
+import generators.ShapeGenerator;
+import helpers.AppConstants;
+import helpers.TimeHelper;
 import shapes.SerializableShape;
 
 import javax.swing.*;
@@ -41,18 +46,23 @@ public class ShapeGeneratorWindow extends JFrame {
 	}
 
 	public void paint(Graphics windowGraphics) {
+		clearScreen();
+		drawShapes();
+		windowGraphics.drawImage(bf, 0, 0, getWidth(), getHeight(), null);
+	}
 
+	private void clearScreen() {
 		Graphics g = bf.getGraphics();
 		g.setColor(Color.black);
-		g.fillRect(0, 0, getWidth(), getHeight());
+		g.fillRect(0, 0, bf.getWidth(), bf.getHeight());
+	}
 
-		Graphics2D g2 = (Graphics2D)g;
+	private void drawShapes() {
+		Graphics2D g2 = (Graphics2D) bf.getGraphics();
 
 		for (SerializableShape shape : shapes) {
 			shape.draw(g2);
 		}
-
-		windowGraphics.drawImage(bf, 0, 0, getWidth(), getHeight(), null);
 	}
 
 	private void initGeneratorThread() {
@@ -60,37 +70,44 @@ public class ShapeGeneratorWindow extends JFrame {
 			generating = true;
 			int counter = 0;
 
+			PrintWriter writer = null;
 			try {
-				PrintWriter writer = new PrintWriter(new FileWriter(AppConstants.SHAPES_FILE_NAME));
+				writer = new PrintWriter(new FileWriter(AppConstants.SHAPES_FILE_NAME));
 
 				while (generating) {
-					System.out.println("generating shapes " + counter);
+					System.out.println("generating shapes " + counter++);
 
-					SerializableShape sr = ShapeGenerator.generateRandomShape();
-					setRandomPosition(sr);
-
-					writer.println(sr.serialize());
-					writer.flush();
-
-					shapes.add(sr);
-					paint(this.getGraphics());
-
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					counter++;
+					generateAndSaveNewShape(writer);
+					render();
+					TimeHelper.sleep(200);
 				}
 
 			} catch (IOException e) {
 				e.printStackTrace();
+			} finally {
+				if (writer != null) {
+					writer.close();
+				}
 			}
 		});
 	}
 
+	private void render() {
+		paint(this.getGraphics());
+	}
+
 	public void startGeneratingShapes() {
 		generatorThread.start();
+	}
+
+	private void generateAndSaveNewShape(PrintWriter writer) {
+		SerializableShape sr = ShapeGenerator.generateRandomShape();
+		setRandomPosition(sr);
+
+		writer.println(sr.serialize());
+		writer.flush();
+
+		shapes.add(sr);
 	}
 
 	private void setRandomPosition(SerializableShape shape) {
