@@ -1,4 +1,4 @@
-import Shapes.SerializableShape;
+import shapes.SerializableShape;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +26,7 @@ public class ShapeGeneratorWindow extends JFrame {
 	}
 
 	ShapeGeneratorWindow() {
-		setSize(1024, 768);
+		setSize(AppConstants.WINDOW_WIDTH, AppConstants.WINDOW_HEIGHT);
 		setTitle("Shape generator");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -61,7 +61,7 @@ public class ShapeGeneratorWindow extends JFrame {
 			int counter = 0;
 
 			try {
-				PrintWriter writer = new PrintWriter(new FileWriter("test"));
+				PrintWriter writer = new PrintWriter(new FileWriter(AppConstants.SHAPES_FILE_NAME));
 
 				while (generating) {
 					System.out.println("generating shapes " + counter);

@@ -1,21 +1,20 @@
-import Shapes.SerializableShape;
+import shapes.SerializableShape;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ShapeRendererWindow extends JFrame {
-
 	private boolean rendering;
 	private Thread renderingThread;
 
 	BufferedImage bf;
 
-	private ArrayList<SerializableShape> shapes;
+	private List<SerializableShape> shapes;
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
@@ -26,14 +25,14 @@ public class ShapeRendererWindow extends JFrame {
 	}
 
 	ShapeRendererWindow() {
-		setSize(1024, 768);
+		setSize(AppConstants.WINDOW_WIDTH, AppConstants.WINDOW_HEIGHT);
 		setTitle("Shape renderer");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		shapes = new ArrayList<>();
 
 		initRenderingThread();
-		bf = new BufferedImage( this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+		bf = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
 	}
 
 	public void showWindow() {
@@ -41,50 +40,73 @@ public class ShapeRendererWindow extends JFrame {
 	}
 
 	public void paint(Graphics windowGraphics) {
+		clearScreen();
+		drawShapes();
 
+		windowGraphics.drawImage(bf, 0, 0, getWidth(), getHeight(), null);
+	}
+
+	public void startRendering() {
+		renderingThread.start();
+	}
+
+	private void clearScreen() {
 		Graphics g = bf.getGraphics();
 		g.setColor(Color.black);
-		g.fillRect(0, 0, getWidth(), getHeight());
+		g.fillRect(0, 0, bf.getWidth(), bf.getHeight());
+	}
 
-		Graphics2D g2 = (Graphics2D)g;
+	private void drawShapes() {
+		Graphics2D g2 = (Graphics2D) bf.getGraphics();
 
 		for (SerializableShape shape : shapes) {
 			shape.draw(g2);
 		}
-
-		windowGraphics.drawImage(bf, 0, 0, getWidth(), getHeight(), null);
 	}
 
 	private void initRenderingThread() {
 		renderingThread = new Thread(() -> {
 			rendering = true;
+
 			while (rendering) {
-				try {
-					Scanner sc = new Scanner(new File("test"));
-					shapes.clear();
-					while (sc.hasNextLine()) {
-						SerializableShape sr = ShapeDeserializer.deserializeShape(sc.nextLine());
-
-						if (sr != null) {
-							shapes.add(sr);
-						}
-					}
-
-					sc.close();
-					paint(this.getGraphics());
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				this.updateShapes();
+				this.render();
+				TimeHelper.sleep(200);
 			}
 		});
 	}
 
-	public void startRendering() {
-		renderingThread.start();
+	private void updateShapes() {
+		this.shapes = readShapesFromFile();
+	}
+
+	private void render() {
+		paint(this.getGraphics());
+	}
+
+
+	private List<SerializableShape> readShapesFromFile() {
+		Scanner scanner = null;
+		ArrayList<SerializableShape> newShapes = new ArrayList<>();
+
+		try {
+			scanner = new Scanner(new File(AppConstants.SHAPES_FILE_NAME));
+
+			while (scanner.hasNextLine()) {
+				SerializableShape sr = ShapeDeserializer.deserializeShape(scanner.nextLine());
+
+				if (sr != null) {
+					newShapes.add(sr);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+		}
+
+		return newShapes;
 	}
 }

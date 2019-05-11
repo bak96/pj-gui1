@@ -1,7 +1,7 @@
-import Shapes.SerializableEllipse;
-import Shapes.SerializableRectangle;
-import Shapes.SerializableShape;
-import Shapes.SerializableTriangle;
+import shapes.SerializableEllipse;
+import shapes.SerializableRectangle;
+import shapes.SerializableShape;
+import shapes.SerializableTriangle;
 
 import java.awt.*;
 import java.util.Scanner;
